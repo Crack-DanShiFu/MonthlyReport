@@ -52,7 +52,7 @@ let load_data_pie1 = function (arg) {
         myChart1.setOption(option, true);
     }
     let query_data = {
-        query_date: arg
+        query_date: JSON.stringify(arg)
     }
     $.ajax({
         url: '/api/get_distinguish_list/',
@@ -63,7 +63,6 @@ let load_data_pie1 = function (arg) {
         },
     })
 }
-
 
 let init_table1 = function () {
     let columns = [
@@ -102,7 +101,7 @@ function operation2(value, row, index) {
 
 let reload_table1 = function (arg) {
     let query_data = {
-        query_date: arg
+        query_date: JSON.stringify(arg)
     }
     $.ajax({
         url: '/api/get_flow_list/',
@@ -257,12 +256,10 @@ let load_avg_table = function (arg) {
         var data_obj = JSON.parse(data_r)
         option['xAxis']['data'] = Object.keys(data_obj)
         option['series'][0]['data'] = Object.values(data_obj)
-        console.log(Object.keys(data_obj))
-        if (Object.keys(data_obj).length != 0)
-            myChart1.setOption(option);
+        myChart1.setOption(option, true);
     }
     let query_data = {
-        query_date: arg
+        query_date: JSON.stringify(arg)
     }
 
     $.ajax({
@@ -277,7 +274,7 @@ let load_avg_table = function (arg) {
 
 let load_lable_data = function (arg) {
     let query_data = {
-        query_date: arg
+        query_date: JSON.stringify(arg)
     }
     $.ajax({
         url: '/api/get_lable_data/',
@@ -300,11 +297,12 @@ window.onload = function () {
         $('#collapseTwo').collapse('show')
     });
 
+
     $('#selectDateTimePicker').datetimepicker({
         format: 'YYYY-MM',
         locale: moment.locale('zh-cn'),
     }).on('dp.change', function (e) {
-        let datetime = $('#selectDateTimePicker input').val()
+        let datetime = [$('#selectDateTimePicker input').val()]
         load_data_pie1(datetime)
         reload_table1(datetime)
         load_avg_table(datetime)
@@ -315,25 +313,66 @@ window.onload = function () {
         format: 'YYYY',
         locale: moment.locale('zh-cn'),
     }).on('dp.change', function (e) {
-        let datetime = $('#selectDateTimePicker2 input').val()
+        // let datetime = [$('#selectDateTimePicker2 input').val()]
+        let datetime = []
+        let year = $('#selectDateTimePicker2 input').val()
+
+        if ($('#queryQuarter').val() != '全年') {
+            let month = quarter_list[$('#queryQuarter').val()]
+            for (let i in month) {
+                datetime.push(year + "-" + month[i])
+            }
+        } else {
+            datetime.push(year)
+        }
+
         load_data_pie1(datetime)
         reload_table1(datetime)
         load_avg_table(datetime)
         load_lable_data(datetime)
     }).hide()
 
+    $('#queryQuarter').parent().hide()
+
     $('#sel_year').on("change", function () {
         var checkbox = $(this);
         if (checkbox[0].checked) {
             $('#selectDateTimePicker').hide()
             $('#selectDateTimePicker2').show()
+            $('#queryQuarter').parent().show()
 
         } else {
             $('#selectDateTimePicker').show()
             $('#selectDateTimePicker2').hide()
-
+            $("#queryQuarter").val('全年')
+            $('#queryQuarter').parent().hide()
         }
     });
+    let quarter_list = {
+        '一季度': ['01', '02', '03'],
+        '二季度': ['04', '05', '06'],
+        '三季度': ['07', '08', '09'],
+        '四季度': ['10', '11', '12']
+    }
+    $('#queryQuarter').change(function (e) {
+        let datetime = []
+        let year = $('#selectDateTimePicker2 input').val()
+        if (year == '')
+            year = '2019'
+        if ($(this).val() != '全年') {
+            let month = quarter_list[$(this).val()]
+            for (let i in month) {
+                datetime.push(year + "-" + month[i])
+            }
+
+        } else {
+            datetime.push(year)
+        }
+        load_data_pie1(datetime)
+        reload_table1(datetime)
+        load_avg_table(datetime)
+        load_lable_data(datetime)
+    })
 
     load_data_pie1()
     init_table1()

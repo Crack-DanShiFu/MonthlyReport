@@ -143,6 +143,7 @@
         }
 
         .personal-panel {
+            width: 500px;
             float: right;
             height: 40px;
             margin: auto;
@@ -179,29 +180,40 @@
         <div class="navbar-header">
             <a class="navbar-brand" href="/">优尼中国情报月度报表</a>
         </div>
-
-        <ul class="nav navbar-nav">
-        </ul>
         <div class="personal-panel">
-
             <div class="form-group img-box">
                 {#                <img src="/static/img/head.png" class="img-circle">#}
-                <div class="switch switch-large" style="float: left ;margin-right: 30px">
+                <div class="switch switch-large" style="float: left ;margin-left: 30px">
                     <input id="sel_year" type="checkbox"/>
-                    全年s
+                    全年
                 </div>
                 <div class='input-group date' id='selectDateTimePicker' style="margin-top: 8px ;width: 200px">
                     <input name="startTime" type='text' class="form-control" placeholder=""/>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                 </div>
+
                 <div class='input-group date' id='selectDateTimePicker2' style="margin-top: 8px ;width: 200px">
+
                     <input name="startTime" type='text' class="form-control" placeholder=""/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar">
+                    </span></span>
+
                 </div>
+
+            </div>
+            <div style="margin-top: -3px">
+                <select id="queryQuarter" class="selectpicker">
+                    <option data-tokens="ketchup mustard">全年</option>
+                    <option data-tokens="ketchup mustard">一季度</option>
+                    <option data-tokens="ketchup mustard">二季度</option>
+                    <option data-tokens="ketchup mustard">三季度</option>
+                    <option data-tokens="ketchup mustard">四季度</option>
+                </select>
             </div>
 
-
         </div>
+
+
     </div>
 </nav>
 <div class="content">
