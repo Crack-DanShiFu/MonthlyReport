@@ -26,15 +26,17 @@ def flow_list():
     return json.dumps(result, ensure_ascii=False)
 
 
-@api.route('/get_oauser_list/')
+@api.route('/get_oauser_list/', methods=['POST'])
 def oauser_list():
-    result = query_oa_user_list()
+    form_data = request.form.to_dict()
+    result = query_oa_user_list(form_data)
     return json.dumps(result, ensure_ascii=False)
 
 
-@api.route('/get_rseview_period_list/')
+@api.route('/get_rseview_period_list/', methods=['POST'])
 def rseview_period_list():
-    result = query_rseview_period_list()
+    form_data = request.form.to_dict()
+    result = query_rseview_period_list(form_data)
     return json.dumps(result, ensure_ascii=False)
 
 

@@ -20,7 +20,6 @@ def query_distinguish_list(form_data):
     else:
         wait_parameter = [datetime.datetime.now().strftime('%Y%m')]
     if len(wait_parameter[0]) == 4:
-        print("is year query")
         d1 = db.session.query(DetailsList.distinguish, func.count(DetailsList.uid)).filter(
             DetailsList.submit_m.ilike(wait_parameter[0] + '%')).group_by(DetailsList.distinguish).all()
         d2 = db.session.query(DetailsList.company, func.count(DetailsList.uid)).filter(
@@ -40,7 +39,6 @@ def query_flow_data(form_data):
     else:
         wait_parameter = [datetime.datetime.now().strftime('%Y%m')]
     if len(wait_parameter[0]) == 4:
-        print("is year query")
         d1 = db.session.query(DetailsList.flow, func.count(DetailsList.uid)).filter(
             DetailsList.submit_m.ilike(wait_parameter[0] + '%')).group_by(DetailsList.flow).order_by(
             func.count(DetailsList.uid).desc()).all()
@@ -51,15 +49,26 @@ def query_flow_data(form_data):
     return [{'flow': i[0], 'flow_num': i[1]} for i in d1]
 
 
-def query_oa_user_list():
-    d1 = db.session.query(DetailsList.submit_m, DetailsList.company, func.count(DetailsList.uid)).group_by(
+def query_oa_user_list(form_data):
+    if form_data.get('query_date'):
+        year = json.loads(form_data.get('query_date'))[0].split('-')[0]
+    else:
+        year = datetime.date.today().year
+
+    d1 = db.session.query(DetailsList.submit_m, DetailsList.company, func.count(DetailsList.uid)).filter(
+        DetailsList.submit_m.ilike(str(year) + '%')).group_by(
         DetailsList.company, DetailsList.submit_m).order_by(
         DetailsList.submit_m).all()
     return [{'m': '{}年{}月'.format(i[0][:4], int(i[0][4:])), 'company': i[1], 'num': i[2]} for i in d1]
 
 
-def query_rseview_period_list():
-    year = datetime.date.today().year
+def query_rseview_period_list(form_data):
+    if form_data.get('query_date'):
+        year = json.loads(form_data.get('query_date'))[0].split('-')[0]
+    else:
+        year = datetime.date.today().year
+        month = datetime.date.today().month
+
     result = []
     for i in range(12):
         d1 = db.session.query(ExamineList.time_frame, func.count(ExamineList.uid)).filter(and_(
@@ -80,7 +89,6 @@ def query_avg_reply_time(form_data):
         wait_parameter = [datetime.datetime.now().strftime('%Y-%m')]
     result = {}
     if len(wait_parameter[0]) == 4:
-        print("is year query")
         d1 = db.session.query(ExamineList.node_type, func.avg(ExamineList.reply_time)).filter(
             ExamineList.reply_b.ilike(wait_parameter[0] + '%')).group_by(
             ExamineList.node_type).all()
@@ -105,7 +113,6 @@ def query_lable_data(form_data):
     else:
         wait_parameter = [datetime.datetime.now().strftime('%Y%m')]
     if len(wait_parameter[0]) == 4:
-        print("is year query")
         d1 = db.session.query(func.count(DetailsList.uid)).filter(
             DetailsList.submit_m.ilike(wait_parameter[0] + '%')).all()
         d2 = db.session.query(func.count(DetailsList.uid)).filter(
