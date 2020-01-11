@@ -16,6 +16,9 @@ SQLALCHEMY_DATABASE_URI = '{}+{}://{}:{}@{}:{}/{}'.format(
     DATABASE
 )
 
+LDAP_USERDN_POSTFIX = ''
+LDAP_SERVER = ''
+
 # 便于调试
 TEMPLATES_AUTO_RELOAD = True
 SEND_FILE_MAX_AGE_DEFAULT = 0

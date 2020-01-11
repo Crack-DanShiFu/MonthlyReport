@@ -1,6 +1,50 @@
-from flask import flash
-
+from flask import flash, current_app
+from flask_login import UserMixin
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, ValidationError, Length, Required
+from ldap3 import Server, Connection, ALL, SUBTREE, ServerPool
 from exts import db
+
+
+class Users(db.Model, UserMixin):
+    __tableName__ = 'users'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String(10))
+    password = db.Column(db.String(20))
+
+    def __init__(self, username, password):
+        self.username = username
+
+    # 定义验证密码的函数confirm_password
+    def confirm_password(self, password):
+        return password == self.password
+
+    def get_id(self):
+        return self.id
+
+    @staticmethod
+    def try_ldap_login(username, password):
+        ldap_host = '你的地址'
+        ldap_port = 389
+        userdn = username  # + current_app.config['LDAP_USERDN_POSTFIX']
+        # server = ServerPool(current_app.config['LDAP_SERVER'])
+        server = Server(host=ldap_host, port=ldap_port, use_ssl=False, get_info='ALL')
+        conn2 = Connection(server, user=userdn, password=password, check_names=True, lazy=False, raise_exceptions=False)
+        # app.logger.debug(conn)
+        return True  # conn.bind()
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
 
 
 class DetailsList(db.Model):
@@ -39,3 +83,47 @@ class ExamineList(db.Model):
     time_frame = db.Column(db.Text)  # (时段）
     node_name = db.Column(db.Text)
     flow_type = db.Column(db.Text)
+
+
+class FailData(db.Model):
+    __tableName__ = 'fail_data'
+    uid = db.Column(db.VARCHAR(40), primary_key=True)
+    fail_time = db.Column(db.Text)
+    jid = db.Column(db.Text)
+
+
+class LoginForm(FlaskForm):
+    username = StringField(
+        label="昵称(账号)",
+        description="昵称(账号)",
+        validators=[
+            DataRequired("请输入昵称(账号)"),
+            Length(5, 10, message=u'长度位于5~10之间')
+        ],
+
+        render_kw={
+            'id': 'username',
+            "class": "form-control input-lg",
+            "placeholder": "昵称(账号)",
+        }
+    )
+    password = PasswordField(
+        label="密码",
+        description="密码",
+        validators=[
+            DataRequired("请输入密码"),
+            Length(5, 20, message=u'长度位于5~20之间')
+        ],
+        render_kw={
+            'id':'password',
+            "class": "form-control input-lg",
+            "placeholder": "密码",
+        }
+    )
+
+    submit = SubmitField(
+        label="登录",
+        render_kw={
+            "class": "btn btn-lg btn-success btn-block submit",
+        }
+    )

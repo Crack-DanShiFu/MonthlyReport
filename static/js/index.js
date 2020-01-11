@@ -86,13 +86,12 @@ let _chart = {
             sidePagination: 'client',//server:服务器端分页|client：前端分页
             search: true,
             pageSize: 10,//单页记录数
-            showRefresh: true,//刷新按钮
+            showRefresh: false,//刷新按钮
             columns: [
                 {
                     title: '流程',
                     field: 'flow',
                     width: '220px',
-
                 },
                 {
                     title: '使用情况',
@@ -130,43 +129,59 @@ let _chart = {
                     dimensions: [],
                     source: []
                 },
+                grid: {
+                    left: '1%',
+                    right: '2%',
+                    bottom: '1%',
+                    containLabel: true
+                },
                 xAxis: {type: 'category'},
-                yAxis: {},
+                yAxis: [{
+                    type: 'value',
+                    name: '审批数量(个)',
+                }],
+                barMaxWidth: 30,
+
                 // Declare several bar series, each will be mapped
                 // to a column of dataset.source by default.
                 series: [
                     {
                         type: 'bar', label: {
                             normal: {
-                                show: true
+                                show: true,
+                                position: 'top',
                             }
                         },
                     },
                     {
                         type: 'bar', label: {
                             normal: {
-                                show: true
+                                show: true,
+                                position: 'top',
                             }
                         },
                     },
                     {
                         type: 'bar', label: {
                             normal: {
-                                show: true
+                                show: true,
+                                position: 'top',
                             }
                         },
                     },
                     {
                         type: 'bar', label: {
                             normal: {
-                                show: true
+                                show: true,
+                                position: 'top',
                             }
                         },
                     },
                     {
                         type: 'bar', label: {
                             normal: {
-                                show: true
+                                show: true,
+                                position: 'top',
                             }
                         },
                     },
@@ -175,6 +190,12 @@ let _chart = {
             };
             let op_data = {}
             var data_obj = JSON.parse(data_r)
+            let year = data_obj[0]['m'].substr(0, 4)
+            for (let i = 1; i < 13; i++) {
+                op_data[year + '年' + i + '月'] = {
+                    'product': year + '年' + i + '月',
+                }
+            }
             data_obj.forEach(function (v, k) {
                 if (!op_data[v['m']])
                     op_data[v['m']] = {product: v['m'],}
@@ -227,6 +248,12 @@ let _chart = {
                     trigger: 'item',
                     formatter: "{b}: {c}小时"
                 },
+                grid: {
+                    left: '1%',
+                    right: '2%',
+                    bottom: '1%',
+                    containLabel: true
+                },
                 legend: {},
                 xAxis: {
                     type: 'category',
@@ -237,8 +264,10 @@ let _chart = {
                 series: [{
                     name: '平均审批时长：（小时）',
                     type: 'bar',
+                    barWidth: 80,
                     itemStyle: {
-                        color: '#aeb9c0'
+                        color: '#aeb9c0',
+
                     },
                     label: {
                         normal: {
@@ -302,12 +331,12 @@ window.onload = function () {
         locale: moment.locale('zh-cn'),
     }).on('dp.change', function (e) {
         let datetime = [$('#selectDateTimePicker input').val()]
+        _chart.load_OA_Histogram(datetime)
         _chart.load_data_pie1(datetime)
         _chart.reload_table1(datetime)
         _chart.load_avg_table(datetime)
         _chart.init_rseview_period(datetime)
         _chart.load_lable_data(datetime)
-        _chart.load_OA_Histogram(datetime)
 
 
     })
@@ -328,12 +357,12 @@ window.onload = function () {
         } else {
             datetime.push(year)
         }
+        _chart.load_OA_Histogram(datetime)
         _chart.load_data_pie1(datetime)
         _chart.reload_table1(datetime)
         _chart.load_avg_table(datetime)
         _chart.load_lable_data(datetime)
         _chart.init_rseview_period(datetime)
-        _chart.load_OA_Histogram(datetime)
 
     }).hide()
 
@@ -362,8 +391,10 @@ window.onload = function () {
     $('#queryQuarter').change(function (e) {
         let datetime = []
         let year = $('#selectDateTimePicker2 input').val()
-        if (year == '')
-            year = '2019'
+        if (year == '') {
+            var date = new Date;
+            year = date.getFullYear().toString()
+        }
         if ($(this).val() != '全年') {
             let month = quarter_list[$(this).val()]
             for (let i in month) {

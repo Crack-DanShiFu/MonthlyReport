@@ -36,6 +36,7 @@ def oauser_list():
 @api.route('/get_rseview_period_list/', methods=['POST'])
 def rseview_period_list():
     form_data = request.form.to_dict()
+
     result = query_rseview_period_list(form_data)
     return json.dumps(result, ensure_ascii=False)
 

@@ -54,7 +54,6 @@ def query_oa_user_list(form_data):
         year = json.loads(form_data.get('query_date'))[0].split('-')[0]
     else:
         year = datetime.date.today().year
-
     d1 = db.session.query(DetailsList.submit_m, DetailsList.company, func.count(DetailsList.uid)).filter(
         DetailsList.submit_m.ilike(str(year) + '%')).group_by(
         DetailsList.company, DetailsList.submit_m).order_by(
@@ -63,12 +62,12 @@ def query_oa_user_list(form_data):
 
 
 def query_rseview_period_list(form_data):
+    form_data=form_data.encode("utf8")
     if form_data.get('query_date'):
         year = json.loads(form_data.get('query_date'))[0].split('-')[0]
     else:
         year = datetime.date.today().year
         month = datetime.date.today().month
-
     result = []
     for i in range(12):
         d1 = db.session.query(ExamineList.time_frame, func.count(ExamineList.uid)).filter(and_(
