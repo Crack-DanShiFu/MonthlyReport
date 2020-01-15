@@ -62,7 +62,6 @@ def query_oa_user_list(form_data):
 
 
 def query_rseview_period_list(form_data):
-    form_data=form_data.encode("utf8")
     if form_data.get('query_date'):
         year = json.loads(form_data.get('query_date'))[0].split('-')[0]
     else:

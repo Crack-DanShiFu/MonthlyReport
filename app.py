@@ -44,6 +44,8 @@ login_manger.login_view = 'page.login'
 # 登陆提示信息
 login_manger.login_message = u'对不起，您还没有登录'
 login_manger.login_message_category = 'info'
+
+
 # from app import login_manger
 
 

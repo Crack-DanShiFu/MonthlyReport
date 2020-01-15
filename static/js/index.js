@@ -8,6 +8,14 @@ let choose_color = function (d) {
     if (i < 1000) return '#fd8f72'
     return '#fc5834'
 }
+
+let getValue = function (d) {
+    let returnResult = []
+    for (let i in d) {
+        returnResult.push(d[i])
+    }
+    return returnResult
+}
 let _chart = {
     load_data_pie1: function (arg) {
         let init_pie1 = function (data_r) {
@@ -202,7 +210,7 @@ let _chart = {
                 op_data[v['m']][v['company']] = v['num']
             })
             option['dataset']['dimensions'] = ["product", "UPG", "UPPG", "UPC", "UPZ", "集团公用"]
-            option['dataset']['source'] = Object.values(op_data)
+            option['dataset']['source'] = getValue(op_data)
             myChart1.setOption(option);
         }
         let query_data = {
@@ -278,7 +286,7 @@ let _chart = {
             };
             var data_obj = JSON.parse(data_r)
             option['xAxis']['data'] = Object.keys(data_obj)
-            option['series'][0]['data'] = Object.values(data_obj)
+            option['series'][0]['data'] = getValue(data_obj)
             myChart1.setOption(option, true);
         }
         let query_data = {

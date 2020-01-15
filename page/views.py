@@ -15,23 +15,27 @@ def index():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('page.index'))
-
     form = LoginForm(request.form)
     form.next = request.args.get('next') or ''  # 登录成功后跳转回原来的url
     if request.method == 'POST' and form.validate():
         username = request.form.get('username')
         password = request.form.get('password')
-
-        res = False  # Users.try_ldap_login(username, password)
-        if res:
-            return redirect(request.args.get('next') or url_for('page.index'))
-            # return render_template('login.html', form=form)
-        else:
-            flash('密码或账号错误', category='errors')
+        res = Users.try_ldap_login(username, password)
+        if not res:
             current_app.logger.error('ldap login failed')
-    if form.errors:
-        current_app.logger.error('login form error')
-    return render_template('login.html', form=form)
+            return render_template('login.html', form=form)
+        else:
+            user = Users.query.filter_by(username=username).first()
+            if not user:
+                user = Users(username, password)
+                db.session.add(user)
+                db.session.commit()
+            login_user(user)
+            return redirect(request.args.get('next') or url_for('page.index'))
+        if form.errors:
+            current_app.logger.error('login form error')
+    else:
+        return render_template('login.html', form=form)
 
 
 @page.route('/logout')

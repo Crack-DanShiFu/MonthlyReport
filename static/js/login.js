@@ -18,11 +18,16 @@ window.onload = function () {
 
     //删除cookie
     function delCookie(name) {
-        setCookie(name, null, -1);
+        setCookie(name, '', -1);
     }
 
     $("#username").val(getCookie('username'));
     $("#password").val(getCookie('password'));
+    if (getCookie('username') != '') {
+        var checkbox = $('#remember_pwd');
+        checkbox.attr('checked', 'checked')
+    }
+
 
     $('#submit').on("click", function () {
         var checkbox = $('#remember_pwd');

@@ -8,10 +8,9 @@ from exts import db
 
 
 class Users(db.Model, UserMixin):
-    __tableName__ = 'users'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(10))
-    password = db.Column(db.String(20))
+    __tableName__ = 'temp_users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100))
 
     def __init__(self, username, password):
         self.username = username
@@ -20,19 +19,9 @@ class Users(db.Model, UserMixin):
     def confirm_password(self, password):
         return password == self.password
 
-    def get_id(self):
-        return self.id
-
     @staticmethod
     def try_ldap_login(username, password):
-        ldap_host = '你的地址'
-        ldap_port = 389
-        userdn = username  # + current_app.config['LDAP_USERDN_POSTFIX']
-        # server = ServerPool(current_app.config['LDAP_SERVER'])
-        server = Server(host=ldap_host, port=ldap_port, use_ssl=False, get_info='ALL')
-        conn2 = Connection(server, user=userdn, password=password, check_names=True, lazy=False, raise_exceptions=False)
-        # app.logger.debug(conn)
-        return True  # conn.bind()
+        return True
 
     def is_authenticated(self):
         return True
@@ -115,7 +104,7 @@ class LoginForm(FlaskForm):
             Length(5, 20, message=u'长度位于5~20之间')
         ],
         render_kw={
-            'id':'password',
+            'id': 'password',
             "class": "form-control input-lg",
             "placeholder": "密码",
         }
